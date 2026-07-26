@@ -28,43 +28,46 @@ test_that("ab_sample_size increases with smaller MDE", {
   expect_true(n_small_mde > n_large_mde)
 })
 
-test_that("ab_power returns numeric between 0 and 1", {
-  result <- ab_power(
-    n_total = 2000, p_current = 0.02, mde = 0.005,
-    alpha = 0.05
+test_that("ab_freq_test detects a significant difference", {
+  result <- ab_freq_test(
+    conversions_control = 100, n_control = 10000,
+    conversions_treatment = 150, n_treatment = 10000
   )
-  expect_true(result >= 0 && result <= 1)
+  expect_true(result$p_value < 0.05)
 })
 
-test_that("ab_power increases with larger sample size", {
-  power_small_n <- ab_power(
-    n_total = 200, p_current = 0.02, mde = 0.005,
-    alpha = 0.05
+test_that("ab_freq_test returns non-significant for no difference", {
+  result <- ab_freq_test(
+    conversions_control = 100, n_control = 10000,
+    conversions_treatment = 102, n_treatment = 10000
   )
-  power_large_n <- ab_power(
-    n_total = 10000, p_current = 0.02, mde = 0.005,
-    alpha = 0.05
-  )
-  expect_true(power_large_n > power_small_n)
+  expect_true(result$p_value > 0.05)
 })
 
-test_that("ab_power returns high power when effect is large", {
-  result <- ab_power(
-    n_total = 2000, p_current = 0.02, mde = 0.48,
-    alpha = 0.05
+test_that("ab_freq_test confidence interval excludes zero when significant", {
+  result <- ab_freq_test(
+    conversions_control = 100, n_control = 10000,
+    conversions_treatment = 200, n_treatment = 10000
   )
-  expect_true(result > 0.99)
+  expect_true(result$ci[1] > 0 || result$ci[2] < 0)
 })
 
+test_that("ab_freq_test confidence interval contains zero when not
+          significant", {
+  result <- ab_freq_test(
+    conversions_control = 100, n_control = 10000,
+    conversions_treatment = 102, n_treatment = 10000
+  )
+  expect_true(result$ci[1] <= 0 && result$ci[2] >= 0)
+})
 
-test_that("ab_sample_size and ab_power are consistent", {
-  n <- ab_sample_size(
-    p_current = 0.02, mde = 0.005, alpha = 0.05,
-    power = 0.80
+test_that("ab_freq_test matches prop.test", {
+  result <- ab_freq_test(
+    conversions_control = 100, n_control = 10000,
+    conversions_treatment = 150, n_treatment = 10000
   )
-  result_power <- ab_power(
-    n_total = n * 2, p_current = 0.02, mde = 0.005,
-    alpha = 0.05
+  base_result <- prop.test(
+    x = c(150, 100), n = c(10000, 10000), correct = FALSE
   )
-  expect_equal(result_power, 0.80, tolerance = 0.02)
+  expect_equal(result$p_value, base_result$p.value, tolerance = 0.01)
 })

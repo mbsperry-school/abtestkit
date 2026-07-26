@@ -1,5 +1,6 @@
 #' Frequentist Sample Size Estimation
-#' This is the inverse of ab_power. This function will calculate how many
+#'
+#' This function will calculate how many
 #' observations are needed to detect a minimum change. It also controls for the
 #' error rates that you are willing to accept.
 #'
@@ -27,37 +28,51 @@ ab_sample_size <- function(p_current, mde, alpha = 0.05, power = 0.80) {
   ceiling(n)
 }
 
-#' Frequentist Power Estimation
-#'
-#' This is the inverse of ab_sample_size. This will calculate the probability
-#' of detecting an effect given how much data you will have.
-#'
-#' @param n_total total number of observations you will have across both
-#' control and treatment
-#' @param p_current current conversion rate. This value should be from 0-1
-#' @param mde "Minimum detectable effect" this is the smallest change that you
-#' would like to see in the data. The idea is that a change of anything less
-#' than this would indicate the experiment did not have a large enough effect
-#' and you would roll back the changes
+
+# Frequentist Proportion Z-test
+
+# This calculates the results of an AB test using a two-proportion z-test.
+#' @param conversions_control how many conversions occured in the control group
+#' @param n_control how many observations were in the control group
+#' @param conversions_treatment how many conversions occured in the test group
+#' @param n_treatment how many observations were in the test group
 #' @param alpha how often you are willing to falsely declare a winner when
-#' there isn't one
-#' @return a double that is how often you want to correctly detect a real
-#' effect when it exists. higher is better.
+#' there isn't one.
+#'
+#' @return a list containing:
+#'   \item{effect}{Observed difference (treatment - control)}
+#'   \item{p_value}{Two-sided p-value from the z-test}
+#'   \item{ci}{Confidence interval for the difference in proportions}
+#'   \item{significant}{Logical. TRUE if p_value < alpha}
+#'
 #' @export
-ab_power <- function(n_total, p_current, mde, alpha = 0.05) {
-  n_per_group <- n_total / 2
+ab_freq_test <- function(conversions_control, n_control,
+                         conversions_treatment, n_treatment, alpha = 0.05) {
+  p_control <- conversions_control / n_control
+  p_treatment <- conversions_treatment / n_treatment
 
-  p_treatment <- p_current + mde
+  effect <- p_treatment - p_control
 
+  p_pooled <- (conversions_control + conversions_treatment) /
+    (n_control + n_treatment)
+
+  se <- sqrt(p_pooled * (1 - p_pooled) * (1 / n_control + 1 / n_treatment))
+
+  z <- effect / se
+
+  p_value <- 2 * pnorm(-abs(z))
+
+  se_unpooled <- sqrt(
+    p_control * (1 - p_control) / n_control +
+      p_treatment * (1 - p_treatment) / n_treatment
+  )
   z_alpha <- qnorm(1 - alpha / 2)
-  p_pooled <- (p_current + p_treatment) / 2
+  ci <- c(effect - z_alpha * se_unpooled, effect + z_alpha * se_unpooled)
 
-  var_null <- p_pooled * (1 - p_pooled) * (2 / n_per_group)
-  var_alt <- (p_current * (1 - p_current) +
-    p_treatment * (1 - p_treatment)) / n_per_group
-  se_alt <- sqrt(var_alt)
-  z_beta <- (mde - z_alpha * sqrt(var_null)) / se_alt
-  power <- pnorm(z_beta)
-
-  power
+  list(
+    effect = effect,
+    p_value = p_value,
+    ci = ci,
+    significant = p_value < alpha
+  )
 }

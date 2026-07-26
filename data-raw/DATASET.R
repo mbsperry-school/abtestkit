@@ -1,21 +1,26 @@
-n <- 5000
-
+n <- 10000
 raw_data <- read.csv("data-raw/marketing_AB.csv")
-
 set.seed(42)
 
+# Historical data: first 1000 PSA rows (pre-experiment baseline)
 psa_group <- raw_data[raw_data$test.group == "psa", ]
+historical_data <- psa_group[1:1000, ]
+historical_data$converted <- as.numeric(historical_data$converted == "True")
+historical_data <- historical_data[, c("test.group", "converted")]
+
+# Remove historical rows from the pool
+remaining_psa <- psa_group[1001:nrow(psa_group), ]
 ad_group <- raw_data[raw_data$test.group == "ad", ]
 
-sample_psa_indices <- sample(nrow(psa_group), size = n, replace = FALSE)
-psa_sample <- psa_group[sample_psa_indices, ]
-
+# Sample from each arm
+sample_psa_indices <- sample(nrow(remaining_psa), size = n, replace = FALSE)
+psa_sample <- remaining_psa[sample_psa_indices, ]
 sample_ad_indices <- sample(nrow(ad_group), size = n, replace = FALSE)
 ad_sample <- ad_group[sample_ad_indices, ]
 
-sampled <- rbind(ad_group, psa_group)
-sampled$converted <- as.numeric(raw_data$converted)
+sampled <- rbind(ad_sample, psa_sample)
+sampled$converted <- as.numeric(sampled$converted == "True")
+experiment_data <- sampled[, c("test.group", "converted")]
 
-sampled_clean <- sampled[, c("test.group", "converted")]
-
-usethis::use_data(sampled_clean, overwrite = TRUE)
+usethis::use_data(historical_data, overwrite = TRUE)
+usethis::use_data(experiment_data, overwrite = TRUE)
