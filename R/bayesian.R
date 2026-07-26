@@ -58,6 +58,11 @@ elicit_beta_prior <- function(guess, worst_case, best_case) {
 }
 
 #' Beta Conjugate Update to get posterior
+#'
+#' @param prior list with alpha and beta from elicit_beta_prior
+#' @param successes number of observed conversions
+#' @param trials total number of observations
+#'
 #' @export
 update_beta <- function(prior, successes, trials) {
   failures <- trials - successes

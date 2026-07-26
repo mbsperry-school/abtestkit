@@ -1,14 +1,12 @@
-n <- 10000
+n <- 5000
 raw_data <- read.csv("data-raw/marketing_AB.csv")
 set.seed(42)
 
-# Historical data: first 1000 PSA rows (pre-experiment baseline)
 psa_group <- raw_data[raw_data$test.group == "psa", ]
 historical_data <- psa_group[1:1000, ]
 historical_data$converted <- as.numeric(historical_data$converted == "True")
 historical_data <- historical_data[, c("test.group", "converted")]
 
-# Remove historical rows from the pool
 remaining_psa <- psa_group[1001:nrow(psa_group), ]
 ad_group <- raw_data[raw_data$test.group == "ad", ]
 

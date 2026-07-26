@@ -6,6 +6,13 @@
 \usage{
 update_beta(prior, successes, trials)
 }
+\arguments{
+\item{prior}{list with alpha and beta from elicit_beta_prior}
+
+\item{successes}{number of observed conversions}
+
+\item{trials}{total number of observations}
+}
 \description{
 Beta Conjugate Update to get posterior
 }

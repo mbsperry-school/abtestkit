@@ -29,9 +29,9 @@ ab_sample_size <- function(p_current, mde, alpha = 0.05, power = 0.80) {
 }
 
 
-# Frequentist Proportion Z-test
-
-# This calculates the results of an AB test using a two-proportion z-test.
+#' Frequentist Proportion Z-test
+#'
+#' This calculates the results of an AB test using a two-proportion z-test.
 #' @param conversions_control how many conversions occured in the control group
 #' @param n_control how many observations were in the control group
 #' @param conversions_treatment how many conversions occured in the test group
