@@ -1,0 +1,140 @@
+---
+title: "abtestkit"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{abtestkit}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(abtestkit)
+```
+
+## What this package does
+
+abtestkit is a toolkit for planning and analyzing binary-outcome A/B tests.
+It covers both frequentist and Bayesian approaches side by side, aimed at
+someone who understands what an A/B test is but has never worked with
+Bayesian methods.
+
+There are two phases: planning (before the experiment) and analysis (after the 
+experiment). This vignette walks through both using a real marketing dataset.
+
+## The dataset
+
+The data comes from a Kaggle marketing A/B test where 588,101 users were
+exposed to either an advertisement or a public service announcement (PSA)
+placeholder. The outcome is whether the user converted (made a purchase).
+
+We split this into two pieces:
+
+- `historical_data`: 1,000 PSA users treated as pre-experiment baseline data.
+  This is what we "know" before the experiment starts.
+- `experiment_data`: 10,000 users per arm sampled from the remaining data.
+  This is the actual experiment.
+
+```{r load-data}
+data(historical_data)
+data(experiment_data)
+```
+
+## Phase 1: Pre-experiment planning
+
+Before running an experiment, you need to answer two questions: how many
+users do I need, and what do I believe going in?
+
+The frequentist side answers the first question with a sample size
+calculation. The Bayesian side answers the second by turning your historical
+data into a prior distribution.
+
+`pre_experiment_comparison` handles both at once. You pass in your historical
+data, the column with the binary outcome, and the minimum detectable effect
+(the smallest change worth detecting). Here we set `mde = 0.01`, meaning we
+want to detect a 1 percentage point lift.
+
+```{r pre-experiment}
+mde <- 0.01
+outcome_column <- "converted"
+group_column <- "test.group"
+control_value <- "psa"
+treatment_value <- "ad"
+
+pre_experiment_data <- pre_experiment_comparison(
+  mde = mde,
+  data = historical_data,
+  outcome_column_name = outcome_column
+)
+```
+
+The function returns two things: the sample size needed per group
+(frequentist) and a Beta prior (Bayesian).
+
+```{r pre-experiment-results}
+n <- pre_experiment_data$n
+experiment_prior <- pre_experiment_data$experiment_prior
+
+cat("Required sample size per group:", n, "\n")
+cat("Prior alpha:", round(experiment_prior$alpha, 3), "\n")
+cat("Prior beta:", round(experiment_prior$beta, 3), "\n")
+cat("Prior method:", experiment_prior$method, "\n")
+```
+
+The sample size tells you how long to run the test. The prior encodes what
+you knew about conversion before seeing any experiment data. Because our
+historical conversion rate is low (well below 50%), the prior was fit using
+quantile matching, which handles skewed distributions better than moment
+matching.
+
+## Phase 2: Post-experiment analysis
+
+Now we have experiment results. `post_experiment_comparison` runs both
+analyses on the same data. The frequentist side runs a two-proportion z-test.
+The Bayesian side updates the prior with each group's observed conversions
+and compares the resulting posterior distributions.
+
+```{r post-experiment}
+post_experiment_data <- post_experiment_comparison(
+  data = experiment_data,
+  outcome_column_name = outcome_column,
+  group_column_name = group_column,
+  control_value = control_value,
+  treatment_value = treatment_value,
+  n = n,
+  experiment_prior = experiment_prior
+)
+```
+
+## Results
+
+`full_comparison` puts everything together: side-by-side visuals and a
+plain-language interpretation of what both methods found.
+
+```{r comparison, fig.width = 10, fig.height = 5}
+full_comparison(
+  freq_results = post_experiment_data$freq_results,
+  bayes_results = post_experiment_data$bayes_results,
+  posterior_control = post_experiment_data$posterior_control,
+  posterior_treatment = post_experiment_data$posterior_treatment
+)
+```
+
+The left plot shows the frequentist confidence interval for the difference
+in conversion rates. If the interval excludes zero (the red dashed line),
+the result is statistically significant.
+
+The right plot shows the Bayesian posterior distribution of the lift. The
+black line is the expected lift, the dashed blue lines mark the 95% credible
+interval, and the red dashed line is zero. If most of the distribution sits
+to the right of zero, the Bayesian analysis favors the treatment.
+
+The printed interpretation below the plots explains what each method
+concluded, whether they agree, and the difference between a confidence
+interval and a credible interval.
