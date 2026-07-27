@@ -1,7 +1,9 @@
 test_that("pre_experiment_comparison returns a sample size and prior", {
   fake_data <- data.frame(converted = c(rep(1, 20), rep(0, 980)))
-  result <- pre_experiment_comparison(mde = 0.01, data = fake_data,
-                                      outcome_column_name = "converted")
+  result <- pre_experiment_comparison(
+    mde = 0.01, data = fake_data,
+    outcome_column_name = "converted"
+  )
   expect_true(result$n > 0)
   expect_true(result$experiment_prior$alpha > 0)
   expect_true(result$experiment_prior$beta > 0)
@@ -9,17 +11,23 @@ test_that("pre_experiment_comparison returns a sample size and prior", {
 
 test_that("pre_experiment_comparison sample size increases with smaller mde", {
   fake_data <- data.frame(converted = c(rep(1, 20), rep(0, 980)))
-  small_mde <- pre_experiment_comparison(mde = 0.001, data = fake_data,
-                                         outcome_column_name = "converted")
-  large_mde <- pre_experiment_comparison(mde = 0.05, data = fake_data,
-                                         outcome_column_name = "converted")
+  small_mde <- pre_experiment_comparison(
+    mde = 0.001, data = fake_data,
+    outcome_column_name = "converted"
+  )
+  large_mde <- pre_experiment_comparison(
+    mde = 0.05, data = fake_data,
+    outcome_column_name = "converted"
+  )
   expect_true(small_mde$n > large_mde$n)
 })
 
 test_that("pre_experiment_comparison works with low conversion rates", {
   fake_data <- data.frame(converted = c(rep(1, 5), rep(0, 995)))
-  result <- pre_experiment_comparison(mde = 0.01, data = fake_data,
-                                      outcome_column_name = "converted")
+  result <- pre_experiment_comparison(
+    mde = 0.01, data = fake_data,
+    outcome_column_name = "converted"
+  )
   expect_true(result$experiment_prior$alpha > 0)
   expect_true(result$experiment_prior$beta > 0)
 })
@@ -29,10 +37,12 @@ test_that("data_prep counts conversions correctly", {
     group = c(rep("control", 100), rep("treatment", 100)),
     converted = c(rep(1, 10), rep(0, 90), rep(1, 20), rep(0, 80))
   )
-  result <- data_prep(data = fake_data, outcome_column_name = "converted",
-                      group_column_name = "group",
-                      control_value = "control",
-                      treatment_value = "treatment", n = 100)
+  result <- data_prep(
+    data = fake_data, outcome_column_name = "converted",
+    group_column_name = "group",
+    control_value = "control",
+    treatment_value = "treatment", n = 100
+  )
   expect_equal(result$conversions_control, 10)
   expect_equal(result$conversions_treatment, 20)
 })
@@ -42,10 +52,12 @@ test_that("data_prep gets n for result", {
     group = c(rep("control", 100), rep("treatment", 100)),
     converted = c(rep(1, 50), rep(0, 50), rep(1, 50), rep(0, 50))
   )
-  result <- data_prep(data = fake_data, outcome_column_name = "converted",
-                      group_column_name = "group",
-                      control_value = "control",
-                      treatment_value = "treatment", n = 10)
+  result <- data_prep(
+    data = fake_data, outcome_column_name = "converted",
+    group_column_name = "group",
+    control_value = "control",
+    treatment_value = "treatment", n = 10
+  )
   expect_equal(result$conversions_control, 10)
   expect_equal(result$conversions_treatment, 10)
 })
