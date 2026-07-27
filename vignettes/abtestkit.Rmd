@@ -20,6 +20,8 @@ library(abtestkit)
 
 ## What this package does
 
+LINK TO GITHUB: https://github.com/mbsperry-school/abtestkit
+
 abtestkit is a toolkit for planning and analyzing binary-outcome A/B tests.
 It covers both frequentist and Bayesian approaches side by side, aimed at
 someone who understands what an A/B test is but has never worked with
