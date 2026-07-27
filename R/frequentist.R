@@ -18,8 +18,8 @@
 ab_sample_size <- function(p_current, mde, alpha = 0.05, power = 0.80) {
   p_treatment <- p_current + mde
 
-  z_alpha <- qnorm(1 - alpha / 2)
-  z_power <- qnorm(power)
+  z_alpha <- stats::qnorm(1 - alpha / 2)
+  z_power <- stats::qnorm(power)
 
   p_pooled <- (p_current + p_treatment) / 2
 
@@ -60,13 +60,13 @@ ab_freq_test <- function(conversions_control, n_control,
 
   z <- effect / se
 
-  p_value <- 2 * pnorm(-abs(z))
+  p_value <- 2 * stats::pnorm(-abs(z))
 
   se_unpooled <- sqrt(
     p_control * (1 - p_control) / n_control +
       p_treatment * (1 - p_treatment) / n_treatment
   )
-  z_alpha <- qnorm(1 - alpha / 2)
+  z_alpha <- stats::qnorm(1 - alpha / 2)
   ci <- c(effect - z_alpha * se_unpooled, effect + z_alpha * se_unpooled)
 
   list(

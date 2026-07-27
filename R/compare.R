@@ -23,12 +23,14 @@ pre_experiment_comparison <- function(mde, alpha = .05, power = .8, data,
   # frequentist
   p_current <- sum(data[[outcome_column_name]]) /
     length(data[[outcome_column_name]])
-  n <- ab_sample_size(p_current = p_current, mde = mde, alpha = alpha,
-                      power = power)
+  n <- ab_sample_size(
+    p_current = p_current, mde = mde, alpha = alpha,
+    power = power
+  )
 
   # bayesian
   guess <- p_current
-  previous_sd <- sd(data[[outcome_column_name]])
+  previous_sd <- stats::sd(data[[outcome_column_name]])
   best_case <- min(guess + previous_sd, 0.999)
   worst_case <- max(guess - previous_sd, 0.001)
   experiment_prior <- elicit_beta_prior(

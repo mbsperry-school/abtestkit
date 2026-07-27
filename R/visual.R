@@ -8,7 +8,7 @@ frequentist_visual <- function(freq_results) {
   effect <- freq_results$effect
   ci <- freq_results$ci
 
-  plot(effect, 1,
+  graphics::plot(effect, 1,
     xlim = c(min(ci[1], 0) - 0.005, max(ci[2], 0) + 0.005),
     ylim = c(0.5, 1.5),
     pch = 19, cex = 2,
@@ -18,12 +18,12 @@ frequentist_visual <- function(freq_results) {
     yaxt = "n"
   )
 
-  segments(ci[1], 1, ci[2], 1, lwd = 3)
+  graphics::segments(ci[1], 1, ci[2], 1, lwd = 3)
 
-  segments(ci[1], 0.95, ci[1], 1.05, lwd = 2)
-  segments(ci[2], 0.95, ci[2], 1.05, lwd = 2)
+  graphics::segments(ci[1], 0.95, ci[1], 1.05, lwd = 2)
+  graphics::segments(ci[2], 0.95, ci[2], 1.05, lwd = 2)
 
-  abline(v = 0, lty = 2, col = "red")
+  graphics::abline(v = 0, lty = 2, col = "red")
 }
 
 #' Bayesian Results Visual
@@ -37,15 +37,17 @@ frequentist_visual <- function(freq_results) {
 
 bayesian_visual <- function(posterior_control, posterior_treatment,
                             n_sims = 10000) {
-  draws_control <- rbeta(n_sims, posterior_control$alpha,
-                         posterior_control$beta)
-  draws_treatment <- rbeta(
+  draws_control <- stats::rbeta(
+    n_sims, posterior_control$alpha,
+    posterior_control$beta
+  )
+  draws_treatment <- stats::rbeta(
     n_sims, posterior_treatment$alpha,
     posterior_treatment$beta
   )
   lift <- draws_treatment - draws_control
 
-  hist(lift,
+  graphics::hist(lift,
     breaks = 80,
     col = "steelblue",
     border = "white",
@@ -55,14 +57,14 @@ bayesian_visual <- function(posterior_control, posterior_treatment,
     prob = TRUE
   )
 
-  abline(v = 0, lty = 2, col = "red", lwd = 2)
+  graphics::abline(v = 0, lty = 2, col = "red", lwd = 2)
 
-  abline(v = mean(lift), lty = 1, col = "black", lwd = 2)
+  graphics::abline(v = mean(lift), lty = 1, col = "black", lwd = 2)
 
-  ci <- quantile(lift, probs = c(0.025, 0.975))
-  abline(v = ci[1], lty = 3, col = "darkblue", lwd = 2)
-  abline(v = ci[2], lty = 3, col = "darkblue", lwd = 2)
-  legend("topright",
+  ci <- stats::quantile(lift, probs = c(0.025, 0.975))
+  graphics::abline(v = ci[1], lty = 3, col = "darkblue", lwd = 2)
+  graphics::abline(v = ci[2], lty = 3, col = "darkblue", lwd = 2)
+  graphics::legend("topright",
     legend = c("Mean", "Zero", "95% Credible Interval"),
     col = c("black", "red", "darkblue"),
     lty = c(1, 2, 3),
@@ -80,8 +82,8 @@ bayesian_visual <- function(posterior_control, posterior_treatment,
 #' @export
 both_visual <- function(freq_results, posterior_control,
                         posterior_treatment, n_sims = 10000) {
-  old_par <- par(mfrow = c(1, 2))
-  on.exit(par(old_par))
+  old_par <- graphics::par(mfrow = c(1, 2))
+  on.exit(graphics::par(old_par))
   frequentist_visual(freq_results)
   bayesian_visual(posterior_control, posterior_treatment, n_sims)
 }
@@ -130,8 +132,10 @@ interpret_results <- function(freq_results, bayes_results, alpha = 0.05) {
 
 
   cat("-- Bayesian Results --\n")
-  cat("P(treatment > control):", round(bayes_results$prob_treatment_better, 4),
-      "\n")
+  cat(
+    "P(treatment > control):", round(bayes_results$prob_treatment_better, 4),
+    "\n"
+  )
   cat("Expected lift:", round(bayes_results$expected_lift, 4), "\n")
   cat(
     "95% Credible Interval for lift: [",
