@@ -2,7 +2,7 @@
 #'
 #' Runs both frequentist and Bayesian pre-test planning on historical data.
 #' Uses the historical conversion rate to calculate the required sample size
-#' (frequentist) and to form a prior distribution (Bayesian).
+#' (frequentist) and form a prior distribution (Bayesian).
 #'
 #' @param mde smallest change you want to detect in the experiment
 #' @param alpha how often you are willing to falsely declare a winner when
@@ -16,6 +16,9 @@
 #'   \item{n}{sample size needed per group from frequentist planning}
 #'   \item{experiment_prior}{Beta prior from Bayesian planning, a list with
 #'   alpha, beta, and method}
+#' @examples
+#' data(historical_data)
+#' pre_experiment_comparison(mde = .2, data = historical_data, outcome_column_name = "converted")
 #'
 #' @export
 pre_experiment_comparison <- function(mde, alpha = .05, power = .8, data,
@@ -46,14 +49,12 @@ pre_experiment_comparison <- function(mde, alpha = .05, power = .8, data,
 #' Prepare Experiment Data for Analysis
 #'
 #' Splits experiment data into control and treatment groups, takes the first
-#' n observations from each, and counts conversions. This is a helper that
-#' feeds into post_experiment_comparison.
+#' n observations from each, and counts conversions. This is a helper function.
 #'
 #' @param data a dataframe of experiment results
 #' @param outcome_column_name string name of the binary outcome column
 #' @param group_column_name string name of the column that identifies which
-#' group
-#' each observation belongs to
+#' group each observation belongs to
 #' @param control_value the value in group_column_name that marks control rows
 #' @param treatment_value the value in group_column_name that marks treatment
 #' rows
@@ -93,14 +94,28 @@ data_prep <- function(data, outcome_column_name, group_column_name,
 #' @param treatment_value the value in group_column_name that marks treatment
 #' rows
 #' @param n how many observations to use from each group
-#' @param alpha how often you are willing to falsely declare a winner when
-#' there isn't one
+#' @param alpha how often you are willing to declare a winner when there
+#' isn't one
 #' @param experiment_prior the prior from pre_experiment_comparison, a list
 #' with alpha and beta
 #'
 #' @return a list containing:
 #'   \item{freq_results}{output from ab_freq_test}
 #'   \item{bayes_results}{output from bayes_ab_summary}
+#' @examples
+#' data(historical_data)
+#' data(experiment_data)
+#' experiment_prior <- list(alpha = 1, beta = 1, method = "quantile")
+#'
+#' post_experiment_data <- post_experiment_comparison(
+#'   data = experiment_data,
+#'   outcome_column_name = "converted",
+#'   group_column_name = "test.group",
+#'   control_value = "psa",
+#'   treatment_value = "ad",
+#'   n = 1000,
+#'   experiment_prior = experiment_prior
+#' )
 #'
 #' @export
 post_experiment_comparison <- function(data, outcome_column_name,

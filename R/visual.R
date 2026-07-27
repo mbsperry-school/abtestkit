@@ -28,7 +28,7 @@ frequentist_visual <- function(freq_results) {
 
 #' Bayesian Results Visual
 #'
-#' Plots the posterior distribution of the lift (treatment - control).
+#' Plots the posterior distribution of the treatment - control.
 #'
 #' @param posterior_control List with alpha and beta for control posterior
 #' @param posterior_treatment List with alpha and beta for treatment posterior
@@ -79,7 +79,6 @@ bayesian_visual <- function(posterior_control, posterior_treatment,
 #' @param posterior_treatment List with alpha and beta for treatment posterior
 #' @param n_sims Number of simulated draws (default 10000)
 #'
-#' @export
 both_visual <- function(freq_results, posterior_control,
                         posterior_treatment, n_sims = 10000) {
   old_par <- graphics::par(mfrow = c(1, 2))
@@ -99,7 +98,6 @@ both_visual <- function(freq_results, posterior_control,
 #' @param bayes_results Output from bayes_ab_summary
 #' @param alpha Significance level used (default 0.05)
 #'
-#' @export
 interpret_results <- function(freq_results, bayes_results, alpha = 0.05) {
   cat("=== A/B Test Results Interpretation ===\n\n")
 
@@ -206,6 +204,20 @@ interpret_results <- function(freq_results, bayes_results, alpha = 0.05) {
 #' @param posterior_treatment List with alpha and beta for treatment posterior
 #' @param alpha Significance level (default 0.05)
 #' @param n_sims Number of simulated draws (default 10000)
+#'
+#' @examples
+#' freq <- ab_freq_test(
+#'   conversions_control = 100, n_control = 5000,
+#'   conversions_treatment = 150, n_treatment = 5000
+#' )
+#' prior <- elicit_beta_prior(
+#'   guess = 0.02, worst_case = 0.01,
+#'   best_case = 0.03
+#' )
+#' post_ctrl <- update_beta(prior, successes = 100, trials = 5000)
+#' post_trt <- update_beta(prior, successes = 150, trials = 5000)
+#' bayes <- bayes_ab_summary(post_ctrl, post_trt)
+#' full_comparison(freq, bayes, post_ctrl, post_trt)
 #'
 #' @export
 full_comparison <- function(freq_results, bayes_results,

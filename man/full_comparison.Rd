@@ -29,3 +29,18 @@ full_comparison(
 \description{
 Displays side-by-side visuals and prints interpretation guide.
 }
+\examples{
+freq <- ab_freq_test(
+  conversions_control = 100, n_control = 5000,
+  conversions_treatment = 150, n_treatment = 5000
+)
+prior <- elicit_beta_prior(
+  guess = 0.02, worst_case = 0.01,
+  best_case = 0.03
+)
+post_ctrl <- update_beta(prior, successes = 100, trials = 5000)
+post_trt <- update_beta(prior, successes = 150, trials = 5000)
+bayes <- bayes_ab_summary(post_ctrl, post_trt)
+full_comparison(freq, bayes, post_ctrl, post_trt)
+
+}

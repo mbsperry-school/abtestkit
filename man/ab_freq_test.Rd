@@ -13,11 +13,11 @@ ab_freq_test(
 )
 }
 \arguments{
-\item{conversions_control}{how many conversions occured in the control group}
+\item{conversions_control}{how many conversions occurred in the control group}
 
 \item{n_control}{how many observations were in the control group}
 
-\item{conversions_treatment}{how many conversions occured in the test group}
+\item{conversions_treatment}{how many conversions occurred in the test group}
 
 \item{n_treatment}{how many observations were in the test group}
 
@@ -33,4 +33,11 @@ a list containing:
 }
 \description{
 This calculates the results of an AB test using a two-proportion z-test.
+}
+\examples{
+ab_freq_test(
+  conversions_control = 100, n_control = 5000,
+  conversions_treatment = 150, n_treatment = 5000
+)
+
 }

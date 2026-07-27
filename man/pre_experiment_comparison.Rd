@@ -34,5 +34,10 @@ alpha, beta, and method}
 \description{
 Runs both frequentist and Bayesian pre-test planning on historical data.
 Uses the historical conversion rate to calculate the required sample size
-(frequentist) and to form a prior distribution (Bayesian).
+(frequentist) and form a prior distribution (Bayesian).
+}
+\examples{
+data(historical_data)
+pre_experiment_comparison(mde = .2, data = historical_data, outcome_column_name = "converted")
+
 }

@@ -14,5 +14,5 @@ bayesian_visual(posterior_control, posterior_treatment, n_sims = 10000)
 \item{n_sims}{Number of simulated draws (default 10000)}
 }
 \description{
-Plots the posterior distribution of the lift (treatment - control).
+Plots the posterior distribution of the treatment - control.
 }

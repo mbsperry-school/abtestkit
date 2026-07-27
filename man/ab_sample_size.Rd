@@ -19,10 +19,13 @@ there isn't one. Lower means you have a stronger test.}
 exists. higher means you have a stronger test.}
 }
 \value{
-An integer value of how many obersvations you need PER GROUP
+An integer value of how many observations you need PER GROUP
 }
 \description{
-This function will calculate how many
-observations are needed to detect a minimum change. It also controls for the
-error rates that you are willing to accept.
+This function will calculate how many observations are needed to detect a
+minimum change. It also controls for the error rates that you are willing to
+accept.
+}
+\examples{
+ab_sample_size(p_current = 0.02, mde = 0.005)
 }

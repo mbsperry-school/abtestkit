@@ -16,3 +16,8 @@ update_beta(prior, successes, trials)
 \description{
 Beta Conjugate Update to get posterior
 }
+\examples{
+prior <- list(alpha = 2, beta = 98)
+update_beta(prior, successes = 10, trials = 100)
+
+}

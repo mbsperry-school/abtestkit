@@ -19,8 +19,7 @@ data_prep(
 \item{outcome_column_name}{string name of the binary outcome column}
 
 \item{group_column_name}{string name of the column that identifies which
-group
-each observation belongs to}
+group each observation belongs to}
 
 \item{control_value}{the value in group_column_name that marks control rows}
 
@@ -36,6 +35,5 @@ a list containing:
 }
 \description{
 Splits experiment data into control and treatment groups, takes the first
-n observations from each, and counts conversions. This is a helper that
-feeds into post_experiment_comparison.
+n observations from each, and counts conversions. This is a helper function.
 }

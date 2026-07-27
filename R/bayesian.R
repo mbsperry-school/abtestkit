@@ -1,6 +1,6 @@
 #' Form a Beta Prior
 #'
-#' This takes beliefs about the prior's values and turns them into a real
+#' This takes beliefs about the prior's values and turns them into a
 #' distribution. If the conversion rate is near .5, we use moment matching, if
 #' it is not, we use quantile matching.
 #'
@@ -11,9 +11,9 @@
 #' @return A list containing:
 #'   \item{alpha}{Alpha parameter of the Beta distribution}
 #'   \item{beta}{Beta parameter of the Beta distribution}
-#'
+#' @examples
+#' elicit_beta_prior(guess = 0.02, worst_case = 0.01, best_case = 0.03)
 #' @export
-#'
 elicit_beta_prior <- function(guess, worst_case, best_case) {
   use_moment <- abs(guess - 0.5) <= 0.15
 
@@ -63,6 +63,10 @@ elicit_beta_prior <- function(guess, worst_case, best_case) {
 #' @param successes number of observed conversions
 #' @param trials total number of observations
 #'
+#' @examples
+#' prior <- list(alpha = 2, beta = 98)
+#' update_beta(prior, successes = 10, trials = 100)
+#'
 #' @export
 update_beta <- function(prior, successes, trials) {
   failures <- trials - successes
@@ -82,7 +86,12 @@ update_beta <- function(prior, successes, trials) {
 #' treatment data
 #' @param n_sims number of monte carlo draws, or number of simulated
 #' experiments to run. Only drawback of higher values is that it takes longer.
-
+#'
+#' @examples
+#' post_ctrl <- list(alpha = 50, beta = 950)
+#' post_trt <- list(alpha = 60, beta = 940)
+#' bayes_ab_summary(post_ctrl, post_trt)
+#'
 #' @export
 bayes_ab_summary <- function(posterior_control, posterior_treatment,
                              n_sims = 10000) {

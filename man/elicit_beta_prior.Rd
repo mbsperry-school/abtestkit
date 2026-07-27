@@ -19,7 +19,10 @@ A list containing:
 \item{beta}{Beta parameter of the Beta distribution}
 }
 \description{
-This takes beliefs about the prior's values and turns them into a real
+This takes beliefs about the prior's values and turns them into a
 distribution. If the conversion rate is near .5, we use moment matching, if
 it is not, we use quantile matching.
+}
+\examples{
+elicit_beta_prior(guess = 0.02, worst_case = 0.01, best_case = 0.03)
 }

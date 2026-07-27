@@ -30,8 +30,8 @@ rows}
 
 \item{n}{how many observations to use from each group}
 
-\item{alpha}{how often you are willing to falsely declare a winner when
-there isn't one}
+\item{alpha}{how often you are willing to declare a winner when there
+isn't one}
 
 \item{experiment_prior}{the prior from pre_experiment_comparison, a list
 with alpha and beta}
@@ -45,4 +45,20 @@ a list containing:
 Runs both frequentist and Bayesian analysis on experiment data. The
 frequentist side runs a two-proportion z-test. The Bayesian side updates
 the prior with observed data and compares the resulting posteriors.
+}
+\examples{
+data(historical_data)
+data(experiment_data)
+experiment_prior <- list(alpha = 1, beta = 1, method = "quantile")
+
+post_experiment_data <- post_experiment_comparison(
+  data = experiment_data,
+  outcome_column_name = "converted",
+  group_column_name = "test.group",
+  control_value = "psa",
+  treatment_value = "ad",
+  n = 1000,
+  experiment_prior = experiment_prior
+)
+
 }

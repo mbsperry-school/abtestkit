@@ -23,3 +23,9 @@ Bayesian Proportion Test
 Calculates the results of an AB test by analyzing updated or posterior
 values of control and treatment results in experiment.
 }
+\examples{
+post_ctrl <- list(alpha = 50, beta = 950)
+post_trt <- list(alpha = 60, beta = 940)
+bayes_ab_summary(post_ctrl, post_trt)
+
+}
