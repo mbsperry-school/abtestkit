@@ -22,11 +22,32 @@ library(abtestkit)
 
 LINK TO GITHUB: https://github.com/mbsperry-school/abtestkit
 
-abtestkit is a toolkit for planning and analyzing binary-outcome A/B tests. An A/B test is an experiment that is used to compare the results of a randomized experiment where subjects can get one of two experiences. It is frequently used in software, where users are given two different experiences on a website and employees are trying to answer the question: "Which is better?" Any time a big company releases a software update, it can be safely assumed that they ran some variation of an A/B test before to get the confidence needed to ship to their whole user base. Scientists and engineers are able to have confidence in the changes in the software by using sound statistical methods that measure an effect on a small group of users, that would generalize to the entire base of users. It covers both frequentist and Bayesian approaches side by side, aimed at
-someone who understands what an A/B test is but has never worked with
+abtestkit is a toolkit for planning and analyzing binary-outcome A/B tests. An 
+A/B test is an experiment that is used to compare the results of a randomized 
+experiment where subjects can get one of two experiences. It is frequently used
+in software, where users are given two different experiences on a website and 
+employees are trying to answer the question: "Which is better?" Any time a big 
+company releases a software update, it can be safely assumed that they ran some
+variation of an A/B test before to get the confidence needed to ship to their 
+whole user base. Scientists and engineers are able to have confidence in the 
+changes in the software by using sound statistical methods that measure an 
+effect on a small group of users, that would generalize to the entire base of 
+users. It covers both frequentist and Bayesian approaches side by side, aimed 
+at someone who understands what an A/B test is but has never worked with
 Bayesian methods.
 
-Most existing tooling makes you decide between frequentist and bayesian approaches. Comparing the two means putting together different packages that have different argument names and processes, which is confusing and discourages comparison. However, both of these methods are useful for different audiences, and the working statistician needs their coworkers and boss to readily understand their work in addition to being able to explain to non-technical audiences. Everyone that takes an intro-level statistics class is familiar with a p-value, which is the foundation of frequentist statistics. But the translation of bayesian statistical methods to stakeholders is much more straightforward. With this package, you don't have to choose, and through inspecting the functions, you can better understand for yourself what the differences are between these schools of thought. There are two phases: planning (before the experiment) and analysis (after the 
+Most existing tooling makes you decide between frequentist and bayesian 
+approaches. Comparing the two means putting together different packages that 
+have different argument names and processes, which is confusing and discourages comparison. However, both of these methods are useful for different audiences, 
+and the working statistician needs their coworkers and boss to readily 
+understand their work in addition to being able to explain to non-technical 
+audiences. Everyone that takes an intro-level statistics class is familiar 
+with a p-value, which is the foundation of frequentist statistics. But the 
+translation of bayesian statistical methods to stakeholders is much more 
+straightforward. With this package, you don't have to choose, and through 
+inspecting the functions, you can better understand for yourself what the 
+differences are between these schools of thought. There are two phases: 
+planning (before the experiment) and analysis (after the 
 experiment). This vignette walks through both using a real marketing dataset.
 
 ## The dataset
@@ -50,15 +71,15 @@ data(experiment_data)
 ## Phase 1: Pre-experiment planning
 
 Before running an experiment, you need to answer two questions: 
-- how many users do I need
+- how many users do I need?
 - what do I believe going in?
 
 The frequentist side answers the first question with a sample size
 calculation. The Bayesian side answers the second by turning your historical
-data into a prior distribution. `pre_experiment_comparison` handles both at once. You pass in your historical
-data, the column with the binary outcome, and the minimum detectable effect
-(the smallest change worth detecting). Here we set `mde = 0.01`, meaning we
-want to detect a 1 percentage point lift.
+data into a prior distribution. `pre_experiment_comparison` handles both at 
+once. You pass in your historical data, the column with the binary outcome, 
+and the minimum detectable effect (the smallest change worth detecting). Here 
+we set `mde = 0.01`, meaning we want to detect a 1 percentage point lift.
 
 ```{r pre-experiment}
 pre_experiment_data <- pre_experiment_comparison(
@@ -121,9 +142,13 @@ full_comparison(
 
 The left plot shows the frequentist confidence interval for the difference
 in conversion rates. If the interval excludes zero (the red dashed line),
-the result is statistically significant. The right plot shows the Bayesian posterior distribution of the lift. The black line is the expected lift, the dashed blue lines mark the 95% credible interval, and the red dashed line is zero. If most of the distribution sits to the right of zero, the Bayesian analysis favors the treatment. The printed interpretation below the plots explains what each method
-concluded, whether they agree, and the difference between a confidence
-interval and a credible interval.
+the result is statistically significant. The right plot shows the Bayesian 
+posterior distribution of the lift. The black line is the expected lift, the 
+dashed blue lines mark the 95% credible interval, and the red dashed line is 
+zero. If most of the distribution sits to the right of zero, the Bayesian 
+analysis favors the treatment. The printed interpretation below the plots 
+explains what each methodb concluded, whether they agree, and the difference 
+between a confidence interval and a credible interval.
 
 
 ## Conclusions

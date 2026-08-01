@@ -38,7 +38,9 @@ Uses the historical conversion rate to calculate the required sample size
 }
 \examples{
 data(historical_data)
-pre_experiment_comparison(mde = .2, data = historical_data,
-outcome_column_name = "converted")
+pre_experiment_comparison(
+  mde = .2, data = historical_data,
+  outcome_column_name = "converted"
+)
 
 }
