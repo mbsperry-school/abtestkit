@@ -18,8 +18,10 @@
 #'   alpha, beta, and method}
 #' @examples
 #' data(historical_data)
-#' pre_experiment_comparison(mde = .2, data = historical_data,
-#' outcome_column_name = "converted")
+#' pre_experiment_comparison(
+#'   mde = .2, data = historical_data,
+#'   outcome_column_name = "converted"
+#' )
 #'
 #' @export
 pre_experiment_comparison <- function(mde, alpha = .05, power = .8, data,

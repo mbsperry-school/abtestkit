@@ -14,7 +14,7 @@ interpret_results(freq_results, bayes_results, alpha = 0.05)
 \item{alpha}{Significance level used (default 0.05)}
 }
 \description{
-Prints a plain-language guide comparing frequentist and Bayesian results,
+Prints a guide comparing frequentist and Bayesian results,
 explaining what each conclusion means and the difference between
 confidence and credible intervals.
 }

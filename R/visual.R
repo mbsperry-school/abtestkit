@@ -90,7 +90,7 @@ both_visual <- function(freq_results, posterior_control,
 
 #' Interpret A/B Test Results
 #'
-#' Prints a plain-language guide comparing frequentist and Bayesian results,
+#' Prints a guide comparing frequentist and Bayesian results,
 #' explaining what each conclusion means and the difference between
 #' confidence and credible intervals.
 #'
@@ -101,96 +101,127 @@ both_visual <- function(freq_results, posterior_control,
 interpret_results <- function(freq_results, bayes_results, alpha = 0.05) {
   cat("=== A/B Test Results Interpretation ===\n\n")
 
-
-  cat("-- Frequentist Results --\n")
-  cat("Observed effect:", round(freq_results$effect, 4), "\n")
-  cat("p-value:", round(freq_results$p_value, 4), "\n")
-  cat(
-    "95% Confidence Interval: [",
-    round(freq_results$ci[1], 4), ",",
-    round(freq_results$ci[2], 4), "]\n"
-  )
-  cat("The frequentist confidence interval says: if we repeated this\n")
-  cat("experiment many times, 95% of the intervals we compute would\n")
-  cat("contain the true effect.\n\n")
+  cat(sprintf(
+    paste0(
+      "-- Frequentist Results --\n",
+      "Observed effect: %.4f\n",
+      "p-value: %.4f\n",
+      "95%% Confidence Interval: [%.4f, %.4f]\n",
+      "The frequentist confidence interval says: if we repeated this\n",
+      "experiment many times, 95%% of the intervals we compute would\n",
+      "contain the true effect.\n\n"
+    ),
+    freq_results$effect,
+    freq_results$p_value,
+    freq_results$ci[1],
+    freq_results$ci[2]
+  ))
 
   if (freq_results$significant) {
-    cat("The result IS statistically significant at alpha =", alpha, "\n")
-    cat("This means: if there were truly no difference between groups,\n")
-    cat(
-      "we would see data this extreme less than", alpha * 100,
-      "% of the time.\n"
-    )
-    cat("We reject the null hypothesis that the groups are the same.\n\n")
+    cat(sprintf(
+      paste0(
+        "The result IS statistically significant at alpha = %g\n",
+        "This means: if there were truly no difference between groups,\n",
+        "we would see data this extreme less than %g%% of the time.\n",
+        "We reject the null hypothesis that the groups are the same.\n\n"
+      ),
+      alpha,
+      alpha * 100
+    ))
   } else {
-    cat("The result is NOT statistically significant at alpha =", alpha, "\n")
-    cat("This means: we cannot rule out that the observed difference\n")
-    cat("is due to chance alone. We fail to reject the null hypothesis.\n\n")
+    cat(sprintf(
+      paste0(
+        "The result is NOT statistically significant at alpha = %g\n",
+        "This means: we cannot rule out that the observed difference\n",
+        "is due to chance alone. We fail to reject the null hypothesis.\n\n"
+      ),
+      alpha
+    ))
   }
 
+  cat(sprintf(
+    paste0(
+      "-- Bayesian Results --\n",
+      "P(treatment > control): %.4f\n",
+      "Expected lift: %.4f\n",
+      "95%% Credible Interval for lift: [%.4f, %.4f]\n",
+      "The Bayesian credible interval says: given our prior beliefs and\n",
+      "the observed data, there is a 95%% probability that the true\n",
+      "effect falls inside this interval.\n\n"
+    ),
+    bayes_results$prob_treatment_better,
+    bayes_results$expected_lift,
+    bayes_results$ci_lift[1],
+    bayes_results$ci_lift[2]
+  ))
 
-  cat("-- Bayesian Results --\n")
-  cat(
-    "P(treatment > control):", round(bayes_results$prob_treatment_better, 4),
-    "\n"
-  )
-  cat("Expected lift:", round(bayes_results$expected_lift, 4), "\n")
-  cat(
-    "95% Credible Interval for lift: [",
-    round(bayes_results$ci_lift[1], 4), ",",
-    round(bayes_results$ci_lift[2], 4), "]\n"
-  )
-  cat("The Bayesian credible interval says: given our prior beliefs and\n")
-  cat("the observed data, there is a 95% probability that the true\n")
-  cat("effect falls inside this interval.\n\n")
+  prob_pct <- bayes_results$prob_treatment_better * 100
 
   if (bayes_results$prob_treatment_better > 0.95) {
-    cat("The Bayesian analysis gives strong evidence that treatment is
-        better.\n")
-    cat(
-      "There is a", round(bayes_results$prob_treatment_better * 100, 1),
-      "% probability that the treatment group has a higher conversion rate.\n\n"
-    )
+    cat(sprintf(
+      paste0(
+        "The Bayesian analysis gives strong evidence that treatment is\n",
+        "better. There is a %.1f%% probability that the treatment group\n",
+        "has a higher conversion rate.\n\n"
+      ),
+      prob_pct
+    ))
   } else if (bayes_results$prob_treatment_better > 0.80) {
-    cat("The Bayesian analysis gives moderate evidence that treatment is
-        better.\n")
-    cat(
-      "There is a", round(bayes_results$prob_treatment_better * 100, 1),
-      "% probability that the treatment group has a higher conversion rate.\n"
-    )
-    cat("More data may be needed to reach a stronger conclusion.\n\n")
+    cat(sprintf(
+      paste0(
+        "The Bayesian analysis gives moderate evidence that treatment is\n",
+        "better. There is a %.1f%% probability that the treatment group\n",
+        "has a higher conversion rate.\n",
+        "More data may be needed to reach a stronger conclusion.\n\n"
+      ),
+      prob_pct
+    ))
   } else {
-    cat("The Bayesian analysis does not give strong evidence either way.\n")
-    cat(
-      "There is only a", round(bayes_results$prob_treatment_better * 100, 1),
-      "% probability that treatment is better.\n\n"
-    )
+    cat(sprintf(
+      paste0(
+        "The Bayesian analysis does not give strong evidence either way.\n",
+        "There is only a %.1f%% probability that treatment is better.\n\n"
+      ),
+      prob_pct
+    ))
   }
 
-
   cat("-- Do the two methods agree? --\n\n")
+
   freq_positive <- freq_results$significant && freq_results$effect > 0
   bayes_positive <- bayes_results$prob_treatment_better > 0.95
 
   if (freq_positive && bayes_positive) {
-    cat("Yes. Both methods agree that the treatment group performed better.\n")
-    cat("The frequentist test found a significant positive effect, and the\n")
-    cat("Bayesian analysis assigns a high probability to treatment being
-        better.\n")
+    cat(
+      "Yes. Both methods agree that the treatment group performed better.\n",
+      "The frequentist test found a significant positive effect, and the\n",
+      "Bayesian analysis assigns a high probability to treatment being\n",
+      "better.\n",
+      sep = ""
+    )
   } else if (!freq_positive && !bayes_positive) {
-    cat("Yes. Neither method found strong evidence that treatment is better.\n")
-    cat("The frequentist test was not significant, and the Bayesian analysis\n")
-    cat("does not assign high probability to treatment winning.\n")
+    cat(
+      "Yes. Neither method found strong evidence that treatment is better.\n",
+      "The frequentist test was not significant, and the Bayesian analysis\n",
+      "does not assign high probability to treatment winning.\n",
+      sep = ""
+    )
   } else if (freq_positive && !bayes_positive) {
-    cat("They disagree. The frequentist test found significance, but the\n")
-    cat("Bayesian analysis is less convinced. This can happen when the prior\n")
-    cat("is skeptical of the effect or the effect is right at the boundary\n")
-    cat("of significance.\n")
+    cat(
+      "They disagree. The frequentist test found significance, but the\n",
+      "Bayesian analysis is less convinced. This can happen when the prior\n",
+      "is skeptical of the effect or the effect is right at the boundary\n",
+      "of significance.\n",
+      sep = ""
+    )
   } else {
-    cat("They disagree. The Bayesian analysis favors treatment, but the\n")
-    cat("frequentist test did not reach significance. This can happen when\n")
-    cat("the prior already leaned toward an effect, giving the Bayesian\n")
-    cat("method a head start the frequentist method does not have.\n")
+    cat(
+      "They disagree. The Bayesian analysis favors treatment, but the\n",
+      "frequentist test did not reach significance. This can happen when\n",
+      "the prior already leaned toward an effect, giving the Bayesian\n",
+      "method a head start the frequentist method does not have.\n",
+      sep = ""
+    )
   }
 }
 

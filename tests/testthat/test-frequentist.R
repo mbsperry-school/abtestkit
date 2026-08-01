@@ -55,8 +55,10 @@ test_that("ab_freq_test confidence interval excludes zero when significant", {
 test_that("ab_freq_test confidence interval contains zero when not
           significant", {
   result <- ab_freq_test(
-    conversions_control = 100, n_control = 10000,
-    conversions_treatment = 102, n_treatment = 10000
+    conversions_control = 100,
+    n_control = 10000,
+    conversions_treatment = 102,
+    n_treatment = 10000
   )
   expect_true(result$ci[1] <= 0 && result$ci[2] >= 0)
 })
